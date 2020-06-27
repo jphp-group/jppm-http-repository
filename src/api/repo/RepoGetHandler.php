@@ -20,6 +20,7 @@ class RepoGetHandler {
         $name = $request->param("name");
         $version = $request->param("version");
         $host = $request->header("Host");
+        $scheme = $request->header("Scheme") ?: "http";
         if ($version == null || $name == null || $host == null) {
             $response->status(400);
             $response->write(json_encode([ "error" => "Bad request!" ]));
@@ -36,7 +37,7 @@ class RepoGetHandler {
         $response->write(json_encode([
             "name" => $package->getName(),
             "version" => $version,
-            "downloadUrl" => "http://{$host}/repo/download/{$package->getName()}.tar.gz?version=$version"
+            "downloadUrl" => "{$scheme}://{$host}/repo/download/{$package->getName()}.tar.gz?version=$version"
         ]));
     }
 }
