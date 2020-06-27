@@ -1,10 +1,12 @@
 name: jppm-http-repository
 version: 1.0.0
+type: project
 
 deps:
   jphp-core: '*'
   jphp-zend-ext: '*'
   jphp-httpserver-ext: '*'
+  jphp-compress-ext: '*'
 
 plugins:
   - App

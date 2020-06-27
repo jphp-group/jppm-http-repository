@@ -8,6 +8,7 @@ use php\lib\fs;
 
 class Package {
     private string $name;
+    private File $packageDirectory;
     private array $versions = [];
 
     /**
@@ -16,15 +17,14 @@ class Package {
      * @throws IOException
      */
     public function __construct(File $packageDirectory) {
-        $this->name = fs::name($packageDirectory);
+        $this->packageDirectory = $packageDirectory;
+        $this->name = fs::name($this->packageDirectory);
 
-        $dirs = $packageDirectory->find();
+        $dirs = $this->packageDirectory->find();
         foreach ($dirs as $dir) {
-            $versionDir = new File($packageDirectory, $dir);
+            $versionDir = new File($this->packageDirectory, $dir);
             if ($versionDir->isFile())
                 continue;
-
-            var_dump($versionDir->getAbsolutePath());
 
             $size = 0;
             fs::scan($versionDir, function (File $file) use (&$size) {
@@ -47,6 +47,25 @@ class Package {
      */
     public function getName(): string {
         return $this->name;
+    }
+
+    /**
+     * @param string $version
+     * @return bool
+     */
+    public function hasVersion(string $version): bool {
+        return isset($this->versions[$version]);
+    }
+
+    /**
+     * @param string $version
+     * @return File|null
+     */
+    public function getPackageDirectoryByVersion(string $version): ?File {
+        if (!$this->hasVersion($version))
+            return null;
+
+        return new File($this->packageDirectory, $version);
     }
 
     /**
